@@ -336,8 +336,13 @@
     .section-header-img img { width: 360px; display: block; }
 
     @media (max-width: 900px) {
-      .section-header-row { flex-direction: column; }
-      .section-header-img { display: none; }
+      .section-header-row { flex-direction: column; gap: 28px; }
+      .section-header-img { align-self: center; opacity: 0.22; }
+      .section-header-img img { width: 100%; max-width: 320px; }
+    }
+
+    @media (max-width: 600px) {
+      .section-header-img img { max-width: 240px; }
     }
 
     .section-label {
