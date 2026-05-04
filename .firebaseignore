@@ -1,0 +1,6 @@
+index-old.html
+deploy.sh
+.git/
+.claude/
+.DS_Store
+*.md
