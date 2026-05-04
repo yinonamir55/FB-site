@@ -1,716 +1,1022 @@
-<!DOCTYPE html><html lang="en"><head>
-
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FoundryBridge — Yinon Amir</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
-<style>
-
-  /* ── Reset & Base ──────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --navy:      #1a2b4a;
-    --navy-lt:   #243660;
-    --navy-pale: #eef1f6;
-    --orange:    #E8621A;
-    --orange-lt: #f07a3a;
-    --cream:     #f7f8fa;
-    --rule:      #e2e6ed;
-    --ink:       #1a2b4a;
-    --ink-md:    #4a5568;
-    --ink-lt:    #718096;
-    --white:     #ffffff;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-weight: 400;
-    color: var(--ink);
-    background: var(--white);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; color: var(--navy); }
-  h1 { font-size: clamp(34px, 4.5vw, 56px); }
-  h2 { font-size: clamp(24px, 3vw, 36px); }
-  h3 { font-size: 17px; }
-  p  { color: var(--ink-md); font-weight: 300; font-size: 15px; line-height: 1.8; }
-  a  { color: inherit; text-decoration: none; }
-
-  .container { max-width: 1080px; margin: 0 auto; padding: 0 36px; }
-  .section { padding: 88px 0; }
-  .section-alt { background: var(--cream); }
-
-  .section-label {
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--orange);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-label::before {
-    content: '';
-    width: 18px;
-    height: 2px;
-    background: var(--orange);
-    display: inline-block;
-    flex-shrink: 0;
-  }
-
-  /* ── NAV ──────────────────────────────────── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(255,255,255,0.97);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--rule);
-    height: 64px;
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 36px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .nav-logo-icon { width: 30px; height: 30px; flex-shrink: 0; }
-
-  .nav-logo-text {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--navy);
-    letter-spacing: -0.02em;
-  }
-
-  .nav-logo-text span { color: var(--orange); }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--ink-md);
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--navy); }
-
-  .nav-cta {
-    background: var(--orange) !important;
-    color: white !important;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: 600 !important;
-    transition: background 0.2s !important;
-  }
-
-  .nav-cta:hover { background: var(--orange-lt) !important; }
-
-  /* ── HERO ─────────────────────────────────── */
-  .hero {
-    padding-top: 132px;
-    padding-bottom: 80px;
-    background: var(--navy);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(ellipse at 75% 40%, rgba(232,98,26,0.14) 0%, transparent 55%),
-      radial-gradient(ellipse at 15% 75%, rgba(255,255,255,0.03) 0%, transparent 45%);
-    pointer-events: none;
-  }
-
-  /* Subtle hex grid texture */
-  .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 17.3V34.7L30 52L0 34.7V17.3Z' fill='none' stroke='rgba(255,255,255,0.025)' stroke-width='1'/%3E%3C/svg%3E");
-    background-size: 60px 52px;
-    pointer-events: none;
-    opacity: 0.7;
-  }
-
-  .hero-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 36px;
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
-    margin-bottom: 20px;
-  }
-
-  .hero h1 {
-    color: white;
-    font-weight: 600;
-    margin-bottom: 16px;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    max-width: 760px;
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--orange);
-  }
-
-  .hero-sub {
-    font-size: 13px;
-    font-weight: 400;
-    color: rgba(255,255,255,0.45);
-    letter-spacing: 0.04em;
-    margin-bottom: 24px;
-    text-transform: uppercase;
-  }
-
-  .hero-tagline {
-    font-size: 17px;
-    font-weight: 300;
-    color: rgba(255,255,255,0.7);
-    line-height: 1.7;
-    margin-bottom: 36px;
-    max-width: 600px;
-    text-align: center;
-  }
-
-  .hero-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--orange);
-    color: white;
-    padding: 13px 28px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: background 0.2s, transform 0.2s;
-  }
-
-  .hero-cta:hover { background: var(--orange-lt); transform: translateY(-1px); }
-  .hero-cta:hover svg { transform: translateX(3px); }
-  .hero-cta svg { transition: transform 0.2s; }
-
-  /* Hero logo image */
-  .hero-logo-img {
-    margin-top: 48px;
-    width: 100%;
-    max-width: 780px;
-    opacity: 0.22;
-    filter: brightness(2) saturate(0.5);
-    pointer-events: none;
-    user-select: none;
-  }
-
-  /* ── ONE LINER ────────────────────────────── */
-  .one-liner {
-    background: var(--orange);
-    padding: 28px 0;
-  }
-
-  .one-liner-text {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 36px;
-    font-size: clamp(16px, 2vw, 20px);
-    font-weight: 300;
-    color: white;
-    line-height: 1.5;
-    text-align: center;
-    letter-spacing: 0.01em;
-  }
-
-  .one-liner-text strong { font-weight: 600; }
-
-  /* ── WHAT WE DO ───────────────────────────── */
-  .what-intro {
-    text-align: center;
-    max-width: 580px;
-    margin: 0 auto 52px;
-  }
-
-  .what-intro h2 { margin-bottom: 12px; }
-  .what-intro .section-label { justify-content: center; }
-  .what-intro .section-label::before { display: none; }
-
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .card {
-    padding: 36px 32px 32px;
-    background: var(--white);
-    transition: background 0.25s;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid var(--rule);
-  }
-
-  .card:last-child { border-right: none; }
-
-  .card:hover { background: var(--cream); }
-
-  .card-icon {
-    width: 52px;
-    height: 52px;
-    margin-bottom: 20px;
-    color: var(--orange);
-    flex-shrink: 0;
-  }
-
-  .card-num {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--orange);
-    opacity: 0.6;
-    margin-bottom: 10px;
-  }
-
-  .card h3 { margin-bottom: 12px; font-size: 17px; color: var(--navy); border-bottom: 2px solid var(--orange); padding-bottom: 12px; }
-  .card p  { font-size: 13.5px; line-height: 1.8; }
-
-  /* ── ABOUT ────────────────────────────────── */
-  .about-intro {
-    max-width: 680px;
-    margin-bottom: 44px;
-  }
-
-  .about-intro h2 { margin-bottom: 12px; }
-  .about-intro p { font-size: 15px; }
-
-  .outcomes-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin-bottom: 56px;
-  }
-
-  .outcome-card {
-    background: var(--white);
-    border: 1px solid var(--rule);
-    border-left: 3px solid var(--orange);
-    border-radius: 0 6px 6px 0;
-    padding: 24px 24px 20px;
-    transition: box-shadow 0.2s;
-  }
-
-  .outcome-card:hover { box-shadow: 0 4px 18px rgba(26,43,74,0.07); }
-
-  .outcome-card h3 { font-size: 15px; margin-bottom: 8px; }
-  .outcome-card p  { font-size: 13.5px; }
-
-  /* Bio row */
-  .bio-row {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 40px;
-    align-items: flex-start;
-    padding-top: 48px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .bio-photo {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 3px solid var(--rule);
-    flex-shrink: 0;
-  }
-
-  .bio-photo img { width: 100%; height: 100%; object-fit: cover; }
-
-  .bio-text h3 { font-size: 21px; margin-bottom: 4px; }
-
-  .bio-role {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--orange);
-    margin-bottom: 16px;
-  }
-
-  .bio-text p { font-size: 14px; margin-bottom: 20px; }
-
-  .linkedin-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    border: 1.5px solid var(--navy);
-    color: var(--navy);
-    padding: 8px 18px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 600;
-    transition: background 0.2s, color 0.2s;
-  }
-
-  .linkedin-btn:hover { background: var(--navy); color: white; }
-
-  /* ── CONTACT ──────────────────────────────── */
-  .contact {
-    background: var(--navy);
-    text-align: center;
-    padding: 96px 0 80px;
-  }
-
-  .contact .section-label { justify-content: center; color: rgba(255,255,255,0.4); }
-  .contact .section-label::before { background: rgba(255,255,255,0.2); }
-
-  .contact h2 { color: white; margin-bottom: 14px; font-size: clamp(28px, 3.5vw, 42px); }
-
-  .contact-sub {
-    font-size: 15px;
-    font-weight: 300;
-    color: rgba(255,255,255,0.6);
-    max-width: 520px;
-    margin: 0 auto 40px;
-    line-height: 1.75;
-  }
-
-  .contact-btns {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 56px;
-  }
-
-  .btn-email {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    background: var(--orange);
-    color: white;
-    padding: 13px 28px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: background 0.2s, transform 0.2s;
-  }
-
-  .btn-email:hover { background: var(--orange-lt); transform: translateY(-1px); }
-
-  .btn-book {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    border: 1.5px solid rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.8);
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 400;
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .btn-book:hover { border-color: rgba(255,255,255,0.6); color: white; }
-
-  .contact-disclaimer {
-    font-size: 11px;
-    color: rgba(255,255,255,0.25);
-    font-weight: 300;
-    max-width: 540px;
-    margin: 0 auto;
-    line-height: 1.7;
-  }
-
-  /* ── FOOTER ───────────────────────────────── */
-  footer {
-    background: #0f1c30;
-    padding: 22px 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .footer-logo {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.4);
-  }
-
-  .footer-logo span { color: var(--orange); }
-  .footer-copy { font-size: 11px; color: rgba(255,255,255,0.22); }
-
-  /* ── RESPONSIVE ───────────────────────────── */
-  @media (max-width: 860px) {
-    .cards-grid { grid-template-columns: 1fr; border-radius: 8px; }
-    .card { border-right: none; border-bottom: 1px solid var(--rule); }
-    .card:last-child { border-bottom: none; }
-    .outcomes-grid { grid-template-columns: 1fr; }
-    .bio-row { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-    .bio-role { text-align: center; }
-    .nav-links { display: none; }
-  }
-
-  @media (max-width: 480px) {
-    .container { padding: 0 20px; }
-    .hero-inner { padding: 0 20px; }
-    .one-liner-text { padding: 0 20px; }
-    footer { padding: 20px; flex-direction: column; text-align: center; }
-  }
-
-</style>
-<style></style><link id="gfont-Inter" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"></head>
-<body data-new-gr-c-s-check-loaded="14.1287.0" data-gr-ext-installed="" style="" data-new-gr-c-s-loaded="14.1287.0">
-
-<!-- ── NAV ─────────────────────────────────────── -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoundryBridge — Yinon Amir</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+
+    /* ── Reset & Base ───────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #1a2b4a;
+      --navy-lt:   #243660;
+      --navy-pale: #eef1f6;
+      --orange:    #E8621A;
+      --orange-lt: #f07a3a;
+      --cream:     #f7f8fa;
+      --rule:      #e2e6ed;
+      --ink:       #1a2b4a;
+      --ink-md:    #4a5568;
+      --ink-lt:    #718096;
+      --white:     #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      color: var(--ink);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; color: var(--navy); }
+    p  { color: var(--ink-md); font-weight: 300; font-size: 15px; line-height: 1.8; }
+    a  { color: inherit; text-decoration: none; }
+
+    .container { max-width: 1152px; margin: 0 auto; padding: 0 36px; }
+
+    /* ── Scroll reveal ──────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.from-left  { transform: translateX(-24px); }
+    .reveal.from-right { transform: translateX(24px); }
+    .reveal.visible {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* ── NAV ────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--cream);
+      border-bottom: 1px solid var(--rule);
+      box-shadow: 0 1px 6px rgba(26,43,74,0.06);
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      max-width: 1152px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo-icon { width: 32px; height: 32px; flex-shrink: 0; }
+
+    .nav-logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .nav-logo-text .accent { color: var(--orange); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--navy);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--orange); }
+
+    .nav-cta {
+      background: var(--orange) !important;
+      color: white !important;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--orange-lt) !important; color: white !important; }
+
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--navy);
+      padding: 4px;
+    }
+
+    /* ── HERO ───────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(to right, var(--orange), var(--orange-lt), transparent);
+    }
+
+    .hero-inner {
+      max-width: 1152px;
+      margin: 0 auto;
+      padding: 160px 36px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(232,98,26,0.4);
+      background: rgba(232,98,26,0.1);
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+    }
+
+    .hero-badge-text {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5.5vw, 72px);
+      font-weight: 700;
+      color: white;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
+
+    .hero-tagline {
+      font-size: clamp(15px, 1.5vw, 18px);
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+      max-width: 640px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .hero-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.03em;
+    }
+
+    .hero-pill-line {
+      width: 1px;
+      height: 16px;
+      background: var(--orange);
+      opacity: 0.6;
+    }
+
+    .hero-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 6px;
+      background: var(--orange);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--orange-lt); transform: translateY(-1px); }
+
+    .btn-outline-white {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 32px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255,255,255,0.4);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    .hero-scroll:hover { color: rgba(255,255,255,0.7); }
+    .hero-scroll svg { animation: bounce 1.6s ease-in-out infinite; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    /* ── INITIATIVE ─────────────────────────────── */
+    .section-initiative {
+      padding: 96px 0 112px;
+      background: var(--cream);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* shared header row: label+heading left, image right */
+    .section-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 48px;
+    }
+
+    .section-header-text { flex: 1; min-width: 0; }
+
+    .section-header-img {
+      flex-shrink: 0;
+      opacity: 0.28;
+      pointer-events: none;
+      user-select: none;
+      align-self: flex-start;
+    }
+    .section-header-img img { width: 360px; display: block; }
+
+    @media (max-width: 900px) {
+      .section-header-row { flex-direction: column; }
+      .section-header-img { display: none; }
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-heading {
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.15;
+      max-width: 560px;
+      margin-bottom: 16px;
+    }
+
+    .section-rule {
+      width: 64px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--orange);
+      margin-top: 20px;
+      margin-bottom: 48px;
+    }
+
+    .section-intro {
+      font-size: clamp(15px, 1.4vw, 19px);
+      font-weight: 300;
+      color: var(--ink-md);
+      line-height: 1.75;
+      max-width: 720px;
+      margin-bottom: 56px;
+    }
+
+    .initiative-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .icard {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 32px;
+      border: 1px solid var(--rule);
+      transition: box-shadow 0.3s;
+    }
+    .icard:hover { box-shadow: 0 6px 24px rgba(26,43,74,0.09); }
+
+    .icard-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: var(--navy-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .icard h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .icard p {
+      font-size: 13px;
+      color: var(--ink-lt);
+      line-height: 1.75;
+    }
+
+    /* ── VENTURE BUILDING ───────────────────────── */
+    .section-venture {
+      padding: 96px 0 112px;
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .venture-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--rule);
+      gap: 1px;
+    }
+
+    .vcard {
+      background: var(--white);
+      padding: 40px;
+      display: flex;
+      gap: 20px;
+      transition: background 0.2s;
+    }
+    .vcard:hover { background: var(--cream); }
+
+    .vcard-icon-wrap {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--navy-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vcard-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .vcard-body p {
+      font-size: 13px;
+      color: var(--ink-lt);
+      line-height: 1.75;
+    }
+
+    .venture-callout {
+      margin-top: 40px;
+      padding: 32px;
+      border-radius: 12px;
+      border-left: 4px solid var(--orange);
+      background: var(--navy-pale);
+    }
+
+    .venture-callout p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ink-md);
+      line-height: 1.75;
+      max-width: 720px;
+    }
+
+    .venture-callout p strong {
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    /* ── ABOUT ──────────────────────────────────── */
+    .section-about {
+      padding: 96px 0 112px;
+      background: var(--navy);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .about-label { color: var(--orange); }
+
+    .about-name {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 700;
+      color: white;
+      margin-bottom: 24px;
+    }
+
+    .about-text {
+      font-size: 15px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .btn-outline-linkedin {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+      margin-top: 16px;
+    }
+    .btn-outline-linkedin:hover { background: rgba(255,255,255,0.1); }
+
+    .about-photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .about-photo {
+      width: 176px;
+      height: 176px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(232,98,26,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .about-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+    .about-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .about-pill {
+      padding: 20px 24px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .about-pill-num {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .about-pill h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .about-pill p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.65;
+    }
+
+    /* ── CONNECT ────────────────────────────────── */
+    .section-connect {
+      padding: 96px 0 0;
+      background: var(--cream);
+    }
+
+    .connect-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .connect-inner .section-rule {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .connect-heading {
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+
+    .connect-sub {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--ink-md);
+      line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    .connect-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .btn-navy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 6px;
+      background: var(--navy);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-navy:hover { background: var(--navy-lt); transform: translateY(-1px); }
+
+    .btn-outline-navy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 32px;
+      border-radius: 6px;
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-outline-navy:hover { background: rgba(26,43,74,0.05); }
+
+    /* ── FOOTER ─────────────────────────────────── */
+    footer {
+      margin-top: 96px;
+      border-top: 1px solid var(--rule);
+      padding: 28px 36px;
+    }
+
+    .footer-inner {
+      max-width: 1152px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .footer-logo:hover { opacity: 1; }
+
+    .footer-logo-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.01em;
+    }
+    .footer-logo-text .accent { color: var(--orange); }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--ink-lt);
+    }
+
+    .footer-linkedin { color: var(--ink-lt); transition: color 0.2s; }
+    .footer-linkedin:hover { color: var(--orange); }
+
+    /* ── Responsive ─────────────────────────────── */
+    @media (max-width: 900px) {
+      .initiative-cards { grid-template-columns: 1fr; }
+      .venture-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: block; }
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .hero-inner { padding: 120px 20px 80px; }
+      .section-initiative, .section-venture, .section-about, .section-connect { padding: 72px 0; }
+      footer { padding: 24px 20px; }
+      .hero-pills { gap: 14px; }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────── -->
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">
+    <a href="#hero" class="nav-logo">
       <svg class="nav-logo-icon" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="15,1 27,8 27,22 15,29 3,22 3,8" fill="none" stroke="#1a2b4a" stroke-width="1.8"></polygon>
-        <polygon points="15,7 22,11 22,19 15,23 8,19 8,11" fill="none" stroke="#E8621A" stroke-width="1.4"></polygon>
-        <circle cx="15" cy="15" r="2.5" fill="#1a2b4a"></circle>
-        <line x1="15" y1="1" x2="15" y2="7" stroke="#1a2b4a" stroke-width="1" opacity="0.4"></line>
-        <line x1="27" y1="8" x2="22" y2="11" stroke="#1a2b4a" stroke-width="1" opacity="0.4"></line>
-        <line x1="27" y1="22" x2="22" y2="19" stroke="#1a2b4a" stroke-width="1" opacity="0.4"></line>
+        <polygon points="15,1 27,8 27,22 15,29 3,22 3,8" fill="none" stroke="#1a2b4a" stroke-width="1.8"/>
+        <polygon points="15,7 22,11 22,19 15,23 8,19 8,11" fill="none" stroke="#E8621A" stroke-width="1.4"/>
+        <circle cx="15" cy="15" r="2.5" fill="#1a2b4a"/>
+        <line x1="15" y1="1" x2="15" y2="7" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
+        <line x1="27" y1="8" x2="22" y2="11" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
+        <line x1="27" y1="22" x2="22" y2="19" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
       </svg>
-      <span class="nav-logo-text">Foundry<span>Bridge</span></span>
-    </div>
+      <span class="nav-logo-text">Foundry<span class="accent">Bridge</span></span>
+    </a>
     <ul class="nav-links">
-      <li><a href="#what-we-do" style="">Venture Building</a></li>
+      <li><a href="#initiative">The Initiative</a></li>
+      <li><a href="#venture">Venture Building</a></li>
       <li><a href="#about">About</a></li>
-      <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+      <li><a href="#connect">Connect</a></li>
+      <li><a href="#connect" class="nav-cta">Get in Touch</a></li>
     </ul>
+    <button class="nav-hamburger" aria-label="Toggle menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>
+      </svg>
+    </button>
   </div>
 </nav>
 
-<!-- ── HERO ────────────────────────────────────── -->
-<section class="hero" id="home">
+<!-- ── HERO ─────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-top-bar"></div>
   <div class="hero-inner">
-    <div class="hero-eyebrow">Technology Leadership · Venture Ecosystem · Business Strategy</div>
-    <h1>From <em>deep-tech innovation</em><br>to global market impact</h1>
-    <p class="hero-tagline">
-      Building FoundryBridge, an initiative focused on bridging Israeli deep-tech health innovation into global markets.
+    <div class="hero-badge reveal">
+      <span class="hero-badge-dot"></span>
+      <span class="hero-badge-text">Deep-Tech · Health Innovation · Global Markets</span>
+    </div>
+    <h1 class="reveal">From <em>deep-tech innovation</em><br>to global market impact</h1>
+    <p class="hero-tagline reveal">
+      Bridging Israeli deep-tech health innovation into global markets — building the ecosystem that connects technology, venture, and strategy.
     </p>
-    <p class="hero-tagline">
-      Engaging with startups, venture firms, and innovation teams on technology, business strategy, product development, and ecosystem collaboration.
-    </p>
-    <a href="#contact" class="hero-cta">
-      Get in Touch
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </a>
+    <div class="hero-pills reveal">
+      <div class="hero-pill"><span class="hero-pill-line"></span>Technology Leadership</div>
+      <div class="hero-pill"><span class="hero-pill-line"></span>Venture Ecosystem</div>
+      <div class="hero-pill"><span class="hero-pill-line"></span>Business Strategy</div>
+    </div>
+    <div class="hero-btns reveal">
+      <a href="#initiative" class="btn-primary">Explore the Initiative</a>
+      <a href="#connect" class="btn-outline-white">Get in Touch</a>
+    </div>
   </div>
+  <a href="#initiative" class="hero-scroll">
+    <span>Scroll</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>
+    </svg>
+  </a>
 </section>
 
-<!-- ── ONE LINER ────────────────────────────────── -->
-<div class="one-liner">
-  <div class="one-liner-text">
-    Bridging Israeli health-tech innovation with the <strong>people, capital, and markets</strong> that scale it.
-  </div>
-</div>
-
-<!-- ── WHAT WE DO ───────────────────────────────── -->
-<section class="section" id="what-we-do">
+<!-- ── THE INITIATIVE ────────────────────────────── -->
+<section class="section-initiative" id="initiative">
   <div class="container">
-    <div class="what-intro">
-      <div class="section-label">VENTURE BUILDING</div>
-      <h2>Building at the Intersection of</h2>
+    <div class="section-header-row reveal">
+      <div class="section-header-text">
+        <span class="section-label">The Initiative</span>
+        <h2 class="section-heading">Where Innovation<br>Meets Global Opportunity</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div class="section-header-img" aria-hidden="true">
+        <img src="assets/FB_Picture1.png" alt="">
+      </div>
     </div>
-
-    <div class="cards-grid">
-      <!-- Card 1 -->
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="26,4 38,11 38,25 26,32 14,25 14,11" fill="none" stroke="#E8621A" stroke-width="2"/>
-            <polygon points="26,10 34,15 34,25 26,30 18,25 18,15" fill="none" stroke="#1a2b4a" stroke-width="1.2" opacity="0.4"/>
-            <circle cx="26" cy="20" r="3" fill="#E8621A"/>
-            <circle cx="8" cy="12" r="3" fill="#1a2b4a" opacity="0.5"/>
-            <circle cx="44" cy="12" r="3" fill="#1a2b4a" opacity="0.5"/>
-            <circle cx="8" cy="36" r="2" fill="#1a2b4a" opacity="0.3"/>
-            <line x1="11" y1="12" x2="14" y2="15" stroke="#1a2b4a" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
-            <line x1="41" y1="12" x2="38" y2="15" stroke="#1a2b4a" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
-            <line x1="10" y1="34" x2="14" y2="24" stroke="#1a2b4a" stroke-width="1" stroke-dasharray="2,2" opacity="0.3"/>
-            <circle cx="26" cy="44" r="2" fill="#E8621A" opacity="0.5"/>
-            <line x1="26" y1="32" x2="26" y2="42" stroke="#E8621A" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+    <p class="section-intro reveal">
+      FoundryBridge is a venture creation initiative focused on bridging Israeli deep-tech health innovation into global markets. It operates at the intersection of technology leadership, venture ecosystem building, and business strategy — engaging startups, venture firms, and innovation teams to create meaningful impact at scale.
+    </p>
+    <div class="initiative-cards" style="position:relative;">
+      <div class="icard reveal">
+        <div class="icard-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
           </svg>
         </div>
-        <div class="card-num">01</div>
-        <h3>Technology Leadership</h3>
-        <p>Senior R&amp;D advisory and technology strategy for health-tech companies navigating product development, engineering organization scaling, and technology transformation. Experienced in building and scaling high-performing global engineering teams, from early-stage startup to enterprise scale. Driving AI-first engineering practices.</p>
+        <h3>Deep-Tech Health</h3>
+        <p>Focusing on breakthrough Israeli innovation at the intersection of life sciences, medical devices, digital health, and advanced biotech.</p>
       </div>
-
-      <!-- Card 2 -->
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 38 Q26 10 48 38" stroke="#E8621A" stroke-width="2.5" fill="none"/>
-            <path d="M4 38 Q26 16 48 38" stroke="#1a2b4a" stroke-width="1.5" fill="none" opacity="0.4"/>
-            <line x1="16" y1="26" x2="16" y2="40" stroke="#1a2b4a" stroke-width="1" opacity="0.5"/>
-            <line x1="22" y1="19" x2="22" y2="40" stroke="#1a2b4a" stroke-width="1" opacity="0.5"/>
-            <line x1="26" y1="17" x2="26" y2="40" stroke="#1a2b4a" stroke-width="1" opacity="0.5"/>
-            <line x1="30" y1="19" x2="30" y2="40" stroke="#1a2b4a" stroke-width="1" opacity="0.5"/>
-            <line x1="36" y1="26" x2="36" y2="40" stroke="#1a2b4a" stroke-width="1" opacity="0.5"/>
-            <line x1="4" y1="40" x2="48" y2="40" stroke="#1a2b4a" stroke-width="2" opacity="0.6"/>
-            <rect x="10" y="38" width="4" height="5" fill="#1a2b4a" opacity="0.5"/>
-            <rect x="38" y="38" width="4" height="5" fill="#1a2b4a" opacity="0.5"/>
+      <div class="icard reveal">
+        <div class="icard-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
           </svg>
         </div>
-        <div class="card-num">02</div>
-        <h3>Venture Ecosystem</h3>
-        <p>Deal flow evaluation, startup assessment, and investment thesis development at the intersection of Israeli deep-tech and global health markets. Direct access to TTO pipelines across leading Israeli academic and clinical institutions.</p>
+        <h3>Global Market Bridge</h3>
+        <p>Translating Israeli R&D excellence into internationally scalable ventures — connecting technology to capital and commercial opportunity.</p>
       </div>
-
-      <!-- Card 3 -->
-      <div class="card">
-        <div class="card-icon">
-          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4"  y="28" width="8"  height="16" fill="#1a2b4a" opacity="0.35"/>
-            <rect x="13" y="20" width="7"  height="24" fill="#1a2b4a" opacity="0.5"/>
-            <rect x="21" y="14" width="9"  height="30" fill="#1a2b4a" opacity="0.7"/>
-            <rect x="31" y="24" width="6"  height="20" fill="#E8621A" opacity="0.85"/>
-            <rect x="38" y="18" width="10" height="26" fill="#1a2b4a" opacity="0.5"/>
-            <rect x="24" y="18" width="2" height="2" fill="white" opacity="0.6"/>
-            <rect x="27" y="18" width="2" height="2" fill="white" opacity="0.6"/>
-            <rect x="24" y="22" width="2" height="2" fill="white" opacity="0.6"/>
-            <rect x="33" y="27" width="2" height="2" fill="white" opacity="0.8"/>
-            <line x1="2" y1="44" x2="50" y2="44" stroke="#1a2b4a" stroke-width="1.5" opacity="0.3"/>
+      <div class="icard reveal">
+        <div class="icard-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="16" y="16" width="6" height="6" rx="1"/>
+            <rect x="2" y="16" width="6" height="6" rx="1"/>
+            <rect x="9" y="2" width="6" height="6" rx="1"/>
+            <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/>
+            <path d="M12 12V8"/>
           </svg>
         </div>
-        <div class="card-num">03</div>
-        <h3>Business Strategy &amp; GTM</h3>
-        <p>Go-to-market strategy, commercial model design, and market entry for health-tech founders. Translating technology value into commercial outcomes — from first customer conversations to scalable revenue architecture.</p>
+        <h3>Ecosystem Architecture</h3>
+        <p>Building the connective tissue between startups, venture firms, corporates, and innovation programs across markets and geographies.</p>
       </div>
-    </div>      
     </div>
   </div>
 </section>
 
-<!-- ── ABOUT & TRACK RECORD ─────────────────────── -->
-<section class="section section-alt" id="about">
+<!-- ── VENTURE BUILDING ──────────────────────────── -->
+<section class="section-venture" id="venture">
   <div class="container">
-    <div class="about-intro">
-      <div class="section-label" style="">About &amp; Track Record</div>
-      <h2>Senior Technology Executive &amp; Venture Builder</h2>
-      <p>A senior technology, product, and venture builder with 25+ years of experience spanning global R&amp;D leadership, corporate innovation, and venture ecosystem development.</p>
-    </div>
-
-    <!-- 2×2 Outcomes -->
-    <div class="outcomes-grid">
-      <div class="outcome-card">
-        <h3>Enterprise-Scale Platform Delivery</h3>
-        <p>Led R&amp;D organizations delivering enterprise healthcare imaging platforms — deployed across hundreds of hospital systems globally, supporting clinical workflows at scale.</p>
+    <div class="section-header-row reveal">
+      <div class="section-header-text">
+        <span class="section-label">Venture Building</span>
+        <h2 class="section-heading">How We Build<br>Together</h2>
+        <div class="section-rule"></div>
       </div>
-      <div class="outcome-card">
-        <h3>Tier-1 Enterprise Technology Programs</h3>
-        <p>Managed multi-year technology programs for Tier-1 operators across North America, Europe, and LATAM — delivering enterprise-scale software platforms with a consistent execution track record.</p>
-      </div>
-      <div class="outcome-card">
-        <h3>Corporate Innovation Ecosystem</h3>
-        <p>Built a corporate innovation arm from scratch — establishing active partnerships across leading VCs, hospital innovation centers, and academic tech transfer offices, generating a structured startup collaboration pipeline.</p>
-      </div>
-      <div class="outcome-card">
-        <h3>Startup Founder Experience</h3>
-        <p>Co-founded and led an early-stage digital health startup — raising pre-seed capital and government grants, launching product, and initiating commercialization with healthcare providers.</p>
+      <div class="section-header-img" aria-hidden="true">
+        <img src="assets/FB_Picture1.png" alt="">
       </div>
     </div>
-
-    <!-- Bio row -->
-    <div class="bio-row">
-      <div class="bio-photo">
-        <img src="assets/yinon_new.jpg" alt="Yinon Amir">
+    <div class="venture-grid">
+      <div class="vcard reveal">
+        <div class="vcard-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+          </svg>
+        </div>
+        <div class="vcard-body">
+          <h3>R&D Leadership</h3>
+          <p>Supporting founders in building and scaling engineering organisations — from early architecture decisions to technical team structuring.</p>
+        </div>
       </div>
-      <div class="bio-text">
-        <img src="assets/FB_Picture1.png" alt="FoundryBridge" style="width:100%; max-width:320px; opacity:0.18; display:block; margin-bottom:16px; margin-left:auto;">
-        <h3>Yinon Amir</h3>
-        <div class="bio-role" style="">Founder · Technology Executive · Venture ECOSYSTEM</div>
-        <p>Combining deep health-tech domain expertise with hands-on experience in technology scouting, strategic partnerships, and corporate innovation. Former R&amp;D and innovation leader at Philips, VP R&amp;D at DarioHealth a digital therapeutics company, and engineering leader at Amdocs - a global telecommunications enterprise software company. Co-founder of a digital mental health startup. Currently active as Venture Partner at NIT — Northern Israeli Tech Fund, supporting health-tech and deep-tech deal flow and investment evaluation.</p>
-        <a href="https://linkedin.com/in/yinon-amir" target="_blank" class="linkedin-btn">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><rect width="14" height="14" rx="2" fill="#1a2b4a"></rect><path d="M3 5.5h1.8V11H3V5.5zm.9-2.9a1.05 1.05 0 110 2.1 1.05 1.05 0 010-2.1zM6.2 5.5H8v.74C8.26 5.8 9 5.35 10 5.35c2 0 2.4 1.3 2.4 3V11h-1.8V8.7c0-.72 0-1.65-1-1.65s-1.15.78-1.15 1.6V11H6.2V5.5z" fill="white"></path></svg>
-          Connect on LinkedIn
+      <div class="vcard reveal">
+        <div class="vcard-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/>
+            <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/>
+            <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>
+          </svg>
+        </div>
+        <div class="vcard-body">
+          <h3>Platform Architecture</h3>
+          <p>Helping early-stage companies design scalable technology foundations that grow with product-market fit and investor scrutiny.</p>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vcard-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+            <polyline points="16 7 22 7 22 13"/>
+          </svg>
+        </div>
+        <div class="vcard-body">
+          <h3>Business Strategy</h3>
+          <p>Sharpening go-to-market positioning, commercial models, and competitive narratives for deep-tech companies entering global markets.</p>
+        </div>
+      </div>
+      <div class="vcard reveal">
+        <div class="vcard-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8621A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="vcard-body">
+          <h3>Ecosystem Collaboration</h3>
+          <p>Connecting startups with venture firms, corporates, and innovation programs — building the partnerships that accelerate growth.</p>
+        </div>
+      </div>
+    </div>
+    <div class="venture-callout reveal">
+      <p><strong>FoundryBridge engages at the earliest stages</strong> — partnering with founders and early-stage companies before product-market fit to establish the technical and strategic foundations that institutional investors expect.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ─────────────────────────────────────── -->
+<section class="section-about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <!-- Left: text -->
+      <div class="reveal from-left">
+        <span class="section-label about-label">About</span>
+        <h2 class="about-name">Yinon Amir</h2>
+        <div class="section-rule" style="margin-bottom:32px;"></div>
+        <p class="about-text">
+          Yinon Amir is a technology leader and venture ecosystem builder operating at the intersection of deep-tech innovation, venture capital, and business strategy. Through FoundryBridge, he is establishing a platform that connects Israeli health-tech breakthroughs to global capital and market opportunities.
+        </p>
+        <p class="about-text">
+          With experience spanning R&D leadership at Philips and DarioHealth, platform architecture, and scaling technology organisations from early-stage to enterprise, Yinon works directly with founders and innovation teams to build companies that are both technically excellent and commercially compelling.
+        </p>
+        <a href="https://www.linkedin.com/in/yinon-amir/" target="_blank" rel="noopener noreferrer" class="btn-outline-linkedin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect width="4" height="12" x="2" y="9"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+          View LinkedIn Profile
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;">
+            <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          </svg>
         </a>
       </div>
+      <!-- Right: photo + pills -->
+      <div class="reveal from-right">
+        <div class="about-photo-wrap">
+          <div class="about-photo">
+            <img src="assets/yinon_new.jpg" alt="Yinon Amir">
+          </div>
+        </div>
+        <div class="about-pills">
+          <div class="about-pill">
+            <span class="about-pill-num">01</span>
+            <div>
+              <h4>Technology</h4>
+              <p>Deep engineering background across platform architecture, R&D org design, and product development</p>
+            </div>
+          </div>
+          <div class="about-pill">
+            <span class="about-pill-num">02</span>
+            <div>
+              <h4>Venture</h4>
+              <p>Active engagement with startups and venture firms across Israeli and global ecosystems</p>
+            </div>
+          </div>
+          <div class="about-pill">
+            <span class="about-pill-num">03</span>
+            <div>
+              <h4>Strategy</h4>
+              <p>Business strategy, go-to-market, and commercial model development for deep-tech companies</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── CONTACT ──────────────────────────────────── -->
-<section class="contact" id="contact">
+<!-- ── CONNECT ───────────────────────────────────── -->
+<section class="section-connect" id="connect">
   <div class="container">
-    <div class="section-label">Get in Touch</div>
-    <h2>Let's Talk.</h2>
-    <p class="contact-sub">Whether you're a founder building in health-tech, an investor exploring the Israeli innovation pipeline, or an organization looking for senior technology and strategy advisory — reach out.</p>
-    <div class="contact-btns">
-      <a href="mailto:yinon@foundrybridge.io" class="btn-email">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><rect x="1" y="4" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.8"></rect><path d="M1 7l9 6 9-6" stroke="currentColor" stroke-width="1.8"></path></svg>
-        yinon@foundrybridge.io
-      </a>
-      <a href="https://outlook.office.com/bookwithme/user/c23ccb2a5faa4cb3a5464bbd0a7be228@foundrybridge.io/meetingtype/YJq_Pj1RSEmyuwLoVc72iQ2?bookingcode=ee9c86ee-4745-492a-8286-71681de0b3d7&amp;anonymous&amp;ismsaljsauthenabled&amp;ep=mlink" target="_blank" class="btn-book">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><rect x="1" y="3" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"></rect><path d="M6 1v4M14 1v4M1 8h18" stroke="currentColor" stroke-width="1.8"></path></svg>
-        Book a Meeting
-      </a>
+    <div class="connect-inner">
+      <div class="reveal">
+        <span class="section-label">Connect</span>
+        <h2 class="connect-heading">Let's Build<br>Something Together</h2>
+        <div class="section-rule"></div>
+        <p class="connect-sub">Whether you're a founder, investor, or innovation leader — if you're working at the frontier of deep-tech health and looking for a strategic partner who understands both technology and venture, reach out.</p>
+        <div class="connect-btns">
+          <a href="https://www.linkedin.com/in/yinon-amir/" target="_blank" rel="noopener noreferrer" class="btn-navy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+              <rect width="4" height="12" x="2" y="9"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+            Connect on LinkedIn
+          </a>
+          <a href="mailto:yinon@foundrybridge.io" class="btn-outline-navy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+            Send an Email
+          </a>
+          <a href="https://outlook.office.com/bookwithme/user/c23ccb2a5faa4cb3a5464bbd0a7be228@foundrybridge.io/meetingtype/YJq_Pj1RSEmyuwLoVc72iQ2?bookingcode=ee9c86ee-4745-492a-8286-71681de0b3d7&anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" class="btn-outline-navy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="4" rx="2"/>
+              <path d="M8 2v4M16 2v4M3 10h18"/>
+              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+            </svg>
+            Book a Meeting
+          </a>
+        </div>
+      </div>
     </div>
-    <p class="contact-disclaimer">Content on this site does not constitute an offer to sell or solicitation of securities.</p>
+
+    <!-- Footer row -->
+    <footer>
+      <div class="footer-inner">
+        <a href="#hero" class="footer-logo">
+          <svg width="28" height="28" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="15,1 27,8 27,22 15,29 3,22 3,8" fill="none" stroke="#1a2b4a" stroke-width="1.8"/>
+            <polygon points="15,7 22,11 22,19 15,23 8,19 8,11" fill="none" stroke="#E8621A" stroke-width="1.4"/>
+            <circle cx="15" cy="15" r="2.5" fill="#1a2b4a"/>
+            <line x1="15" y1="1" x2="15" y2="7" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
+            <line x1="27" y1="8" x2="22" y2="11" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
+            <line x1="27" y1="22" x2="22" y2="19" stroke="#1a2b4a" stroke-width="1" opacity="0.4"/>
+          </svg>
+          <span class="footer-logo-text">Foundry<span class="accent">Bridge</span></span>
+        </a>
+        <p class="footer-copy">© 2026 FoundryBridge. Bridging Israeli deep-tech health innovation into global markets.</p>
+        <a href="https://www.linkedin.com/in/yinon-amir/" target="_blank" rel="noopener noreferrer" class="footer-linkedin">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+            <rect width="4" height="12" x="2" y="9"/>
+            <circle cx="4" cy="4" r="2"/>
+          </svg>
+        </a>
+      </div>
+    </footer>
   </div>
 </section>
 
-<!-- ── FOOTER ───────────────────────────────────── -->
-<footer>
-  <div class="footer-logo">Foundry<span>Bridge</span></div>
-  <div class="footer-copy">© 2026 FoundryBridge. All rights reserved.</div>
-</footer>
+<script>
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
 
-
-
-</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
+</body>
+</html>
