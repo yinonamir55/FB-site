@@ -24,6 +24,15 @@
   <meta name="twitter:description" content="Bridging Israeli deep-tech health innovation into global markets.">
   <meta name="twitter:image"       content="https://foundrybridge.io/assets/og_image_fb.png">
 
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1Z9YFWN573"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-1Z9YFWN573', { send_page_view: true });
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -1036,11 +1045,54 @@
 </section>
 
 <script>
+  // ── Scroll reveal ─────────────────────────────
   const observer = new IntersectionObserver(
     entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
     { threshold: 0.12 }
   );
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── GA4 Events ────────────────────────────────
+
+  // 1. Scroll depth — 25 / 50 / 75 / 100%
+  const scrollMilestones = [25, 50, 75, 100];
+  const scrollFired = new Set();
+  window.addEventListener('scroll', () => {
+    const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+    scrollMilestones.forEach(m => {
+      if (pct >= m && !scrollFired.has(m)) {
+        scrollFired.add(m);
+        gtag('event', 'scroll_depth', { depth_percentage: m });
+      }
+    });
+  }, { passive: true });
+
+  // 2. Section visibility — fires once per section
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        gtag('event', 'section_view', { section_id: e.target.id });
+        sectionObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('section[id]').forEach(s => sectionObserver.observe(s));
+
+  // 3. CTA click tracking
+  document.querySelectorAll('a[href*="linkedin.com"]').forEach(el =>
+    el.addEventListener('click', () => gtag('event', 'cta_click', { cta_type: 'linkedin' }))
+  );
+  document.querySelectorAll('a[href^="mailto:"]').forEach(el =>
+    el.addEventListener('click', () => gtag('event', 'cta_click', { cta_type: 'email' }))
+  );
+  document.querySelectorAll('a[href*="bookwithme"]').forEach(el =>
+    el.addEventListener('click', () => gtag('event', 'cta_click', { cta_type: 'book_meeting' }))
+  );
+
+  // 4. Time on page — 30s / 60s / 2min / 5min
+  [30, 60, 120, 300].forEach(sec => {
+    setTimeout(() => gtag('event', 'time_on_page', { seconds: sec }), sec * 1000);
+  });
 </script>
 
 </body>
